@@ -40,18 +40,7 @@
         world.backgroundColor = new Color(35, 0, 30);
         world.start('gameCanvas');
         //world.debug = true;
-
-        let resourceA = new Resource(100, 120, world, ResourceType.ISOPHINE);
-        let resourceB = new Resource(100, 150, world, ResourceType.METOSION);
-        let resourceC = new Resource(100, 200, world, ResourceType.ALTROSIA);
-        let resourceGen = new ResourceGenerator(300, 150, world, ResourceType.ALTROSIA);
-        let resourceBatt = new ResourceBattery(300, 300, world, ResourceType.ISOPHINE);
-        let resourceTrans = new ResourceTransformer(300, 500, world, {
-            METOSION: 2,
-            ALTROSIA: 1
-        }, {
-            ISOPHINE: 2
-        });
+        new Game(world);
     </script>
 </body>
 </html>

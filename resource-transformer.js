@@ -6,8 +6,9 @@
 //     ALTROSIA: 2
 // };
 
-function ResourceTransformer(x, y, world, inputResourceTypes, outputResourceTypes)
+function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes)
 {
+    this.game = game;
     this.color = new Color(255, 255, 0);
 
     const inputResourceTypeList = this.linearize(inputResourceTypes);
@@ -18,7 +19,7 @@ function ResourceTransformer(x, y, world, inputResourceTypes, outputResourceType
     let inputsOutputsMargin = 20;
     let width = this.resourceIORadius * 2 + inputsOutputsMargin;
     let height = this.topBottomMargin + (this.resourceIORadius * 2 + this.topBottomMargin) * Math.max(inputResourceTypeList.length, outputResourceTypeList.length);
-    Actor.call(this, x, y, world, width, height);
+    Actor.call(this, x, y, this.game.world, width, height);
 
     const xLeft = this.getLeftX();
     const xRight = this.getRightX();

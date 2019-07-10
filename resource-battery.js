@@ -1,6 +1,7 @@
-function ResourceBattery(x, y, world)
+function ResourceBattery(x, y, game)
 {
-    Actor.call(this, x, y, world, 40, 40);
+    this.game = game;
+    Actor.call(this, x, y, this.game.world, 40, 40);
 
     this.color = new Color(120, 120, 120);
     this.rows = 2;

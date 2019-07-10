@@ -1,8 +1,9 @@
-function ResourceGenerator(x, y, world, resourceType)
+function ResourceGenerator(x, y, game, resourceType)
 {
+    this.game = game;
     this.resourceType = resourceType;
     this.radius = 20;
-    Actor.call(this, x, y, world, this.radius * 2 , this.radius * 2);
+    Actor.call(this, x, y, this.game.world, this.radius * 2 , this.radius * 2);
 }
 ResourceGenerator.prototype = Object.create(Actor.prototype);
 ResourceGenerator.prototype.constructor = ResourceGenerator;

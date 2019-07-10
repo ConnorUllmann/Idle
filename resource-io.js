@@ -1,8 +1,4 @@
 ResourceIO.all = [];
-ResourceIO.getMouseSelectedResourceIOWithResourceType = function(resourceType)
-{
-    return ResourceIO.all.first(resourceIO => resourceIO.isMouseSelected && resourceIO.resourceType === resourceType);
-};
 ResourceIO.getMouseHoveringConnectableResourceIOWithResourceType = function(resourceIO)
 {
     return ResourceIO.all.first(o => o.isMouseHovering() && o.resourceType === resourceIO.resourceType && o.canConnect(resourceIO));
@@ -18,8 +14,6 @@ function ResourceIO(parentEntity, xOffset, yOffset, radius, resourceType, ioType
     this.resourceType = resourceType;
     this.ioType = ioType;
     this.connectedResourceIO = null;
-
-    this.isMouseSelected = false;
 
     ResourceIO.all.push(this);
 }
@@ -83,27 +77,17 @@ ResourceIO.prototype.update = function()
     {
         if(mouse.rightPressed)
         {
-            this.isMouseSelected = true;
+            this.parentEntity.game.mouseSelectedResourceIO = this;
+            this.disconnect();
         }
         else if(mouse.rightReleased)
         {
-            let mouseSelectedResourceIO = ResourceIO.getMouseSelectedResourceIOWithResourceType(this.resourceType);
-            if(mouseSelectedResourceIO != null)
+            if(this.parentEntity.game.mouseSelectedResourceIO != null)
             {
-                if(this.tryConnect(mouseSelectedResourceIO))
-                {
-                    this.isMouseSelected = false;
-                    this.connectedResourceIO.isMouseSelected = false;
-                }
+                this.tryConnect(this.parentEntity.game.mouseSelectedResourceIO);
+                this.parentEntity.game.mouseSelectedResourceIO = null;
             }
         }
-    }
-
-    if(mouse.rightReleased)
-    {
-        if(this.isMouseSelected)
-            this.disconnect();
-        this.isMouseSelected = false;
     }
 };
 
@@ -111,18 +95,19 @@ ResourceIO.prototype.render = function()
 {
     const x = this.getX();
     const y = this.getY();
-    const connected = this.isConnected();
+    const isConnected = this.isConnected();
+    const isMouseSelected = this.isMouseSelected();
     const resourceConfig = this.getResourceConfig();
     const resourceColor = resourceConfig == null ? "#222" : resourceConfig.COLOR;
-    const backgroundColor = this.isMouseSelected ? "#ddd" : (this.isMouseHovering() ? "#fff" : (connected ? resourceColor : "#000"));
+    const backgroundColor = isMouseSelected ? "#ddd" : (this.isMouseHovering() ? "#fff" : (isConnected ? resourceColor : "#000"));
     Draw.circle(this.parentEntity.world, x, y, this.radius, backgroundColor);
     Draw.circleOutline(this.parentEntity.world, x, y, this.radius, resourceColor, 3);
     
-    if(connected && this.ioType === IOType.INPUT)
+    if(isConnected && this.ioType === IOType.INPUT)
     {
         Draw.line(this.parentEntity.world, x, y, this.connectedResourceIO.getX(), this.connectedResourceIO.getY(), resourceColor, 6);
     }
-    else if(this.isMouseSelected)
+    else if(isMouseSelected)
     {
         let xDestination = this.parentEntity.world.mouse.x;
         let yDestination = this.parentEntity.world.mouse.y;
@@ -142,3 +127,5 @@ ResourceIO.prototype.isMouseHovering = function()
     let yMouse = this.parentEntity.world.mouse.y;
     return Utils.distanceSq(this.getX(), this.getY(), xMouse, yMouse) <= this.radius * this.radius;
 };
+
+ResourceIO.prototype.isMouseSelected = function() { return this === this.parentEntity.game.mouseSelectedResourceIO; };
