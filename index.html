@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <script src="EngineJS/stack.js"></script>
+    <script src="EngineJS/utils.js"></script>
+    <script src="EngineJS/point.js"></script>
+    <script src="EngineJS/rectangle.js"></script>
+    <script src="EngineJS/grid.js"></script>
+    <script src="EngineJS/heap.js"></script>
+    <script src="EngineJS/path.js"></script>
+    <script src="EngineJS/range.js"></script>
+    <script src="EngineJS/tree.js"></script>
+    <script src="EngineJS/color.js"></script>
+    <script src="EngineJS/draw.js"></script>
+    <script src="EngineJS/entity.js"></script>
+    <script src="EngineJS/world.js"></script>
+    <script src="EngineJS/timer.js"></script>
+    <script src="EngineJS/mouse.js"></script>
+    <script src="EngineJS/keyboard.js"></script>
+    <script src="EngineJS/actor.js"></script>
+
+    <script src="config.js"></script>
+    <script src="io-types.js"></script>
+    <script src="game.js"></script>
+    <script src="resource.js"></script>
+    <script src="resource-generator.js"></script>
+    <script src="resource-battery.js"></script>
+    <script src="resource-io.js"></script>
+    <script src="resource-transformer.js"></script>
+
+    <title>idle</title>
+</head>
+<body>
+    <canvas oncontextmenu="return false;" id="gameCanvas" width="920" height="920"></canvas>
+    <script type="text/javascript" charset="utf-8">
+        var world = new World();
+        world.backgroundColor = new Color(35, 0, 30);
+        world.start('gameCanvas');
+        //world.debug = true;
+
+        let resourceA = new Resource(100, 120, world, ResourceType.ISOPHINE);
+        let resourceB = new Resource(100, 150, world, ResourceType.METOSION);
+        let resourceC = new Resource(100, 200, world, ResourceType.ALTROSIA);
+        let resourceGen = new ResourceGenerator(300, 150, world, ResourceType.ALTROSIA);
+        let resourceBatt = new ResourceBattery(300, 300, world, ResourceType.ISOPHINE);
+        let resourceTrans = new ResourceTransformer(300, 500, world, {
+            METOSION: 2,
+            ALTROSIA: 1
+        }, {
+            ISOPHINE: 2
+        });
+    </script>
+</body>
+</html>
