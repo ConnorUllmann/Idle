@@ -28,7 +28,6 @@ function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes
 
     this.inputResourceIOs = [];
     this.outputResourceIOs = [];
-    this.inputResourceIOsReady = []; // list of resourceIOs which are ready to transform
 
     const heightBetweenMargins = this.height - (this.topBottomMargin + this.resourceIORadius) * 2;
     for(let i = 0; i < inputResourceTypeList.length; i++)
@@ -54,27 +53,6 @@ ResourceTransformer.prototype.constructor = ResourceTransformer;
 ResourceTransformer.prototype.hasConnectedAllInputs = function()
 {
     return !this.inputResourceIOs.any(o => !o.isConnected());
-};
-
-ResourceTransformer.prototype.hasAllInputsReady = function()
-{
-    // Only need to check lengths because only this transformer's unique inputIOs are allowed to be added
-    return this.inputResourceIOsReady.length === this.inputResourceIOs.length;
-};
-
-ResourceTransformer.prototype.canReceiveInput = function(resourceIO)
-{
-    return this.inputResourceIOs.includes(resourceIO) && !this.inputResourceIOsReady.includes(resourceIO);
-};
-
-ResourceTransformer.prototype.tryReceiveInput = function(resourceIO)
-{
-    if(this.canReceiveInput(resourceIO))
-    {
-        this.inputResourceIOsReady.push(resourceIO);
-        return true;
-    }
-    return false;
 };
 
 ResourceTransformer.prototype.linearize = function(intMap)
@@ -107,17 +85,10 @@ ResourceTransformer.prototype.update = function()
     for(let resourceIO of this.outputResourceIOs)
         resourceIO.update();
 
-    if(this.hasAllInputsReady())
+    if(!this.inputResourceIOs.any(o => !o.isConnected()) && !this.inputResourceIOs.map(o => o.connectedResourceIO).any(o => !o.isBackedUp))
     {
-        let connectedOutputResourceIOs = this.outputResourceIOs.filter(o => o.isConnected());
-        let unconnectedOutputResourceIOs = this.outputResourceIOs.filter(o => !o.isConnected());
-        let allOutputResourcesReady = !connectedOutputResourceIOs.map(o => o.connectedResourceIO).any(o => !o.canAddResource());
-        if(allOutputResourcesReady)
-        {
-            this.inputResourceIOsReady.clear();
-            connectedOutputResourceIOs.map(o => o.connectedResourceIO).forEach(o => o.tryAddResource());
-            unconnectedOutputResourceIOs.forEach(o => new Resource(o.getX() + 10, o.getY(), this.game, o.resourceType));
-        }
+        this.inputResourceIOs.map(o => o.connectedResourceIO).forEach(o => o.isBackedUp = false);
+        this.outputResourceIOs.forEach(o => o.isBackedUp = true);
     }
 };
 

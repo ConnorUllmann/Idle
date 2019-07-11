@@ -18,7 +18,8 @@ function Game(world)
 
     let resourceTrans = new ResourceTransformer(500, 500, this, {
         METOSION: 1,
-        ALTROSIA: 1
+        ALTROSIA: 1,
+        ISOPHINE: 1
     }, {
         ISOPHINE: 1
     });

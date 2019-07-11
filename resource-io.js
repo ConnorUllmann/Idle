@@ -14,6 +14,7 @@ function ResourceIO(parentEntity, xOffset, yOffset, radius, resourceType, ioType
     this.resourceType = resourceType;
     this.ioType = ioType;
     this.connectedResourceIO = null;
+    this.isBackedUp = false; //only able to be true for OUTPUT-type IOs
 
     ResourceIO.all.push(this);
 }
@@ -24,19 +25,18 @@ ResourceIO.prototype.removed = function()
     ResourceIO.all.removeThis(this);
 };
 
-ResourceIO.prototype.canAddResource = function()
+ResourceIO.prototype.receiveTransferReadySignal = function()
 {
-    if(this.ioType !== IOType.INPUT)
-        return false;
-    return this.parentEntity.canReceiveInput(this);
+    this.parentEntity.receiveTransferReadySignal(this);
 };
 
-// Returns true if the parent entity was able to receive the added resource
-ResourceIO.prototype.tryAddResource = function()
+// Output => Input communication
+ResourceIO.prototype.tryTakeResource = function()
 {
-    if(this.ioType !== IOType.INPUT)
+    if(!this.isBackedUp)
         return false;
-    return this.parentEntity.tryReceiveInput(this);
+    this.isBackedUp = false;
+    return true;
 };
 
 ResourceIO.prototype.isIOMatch = function(resourceIO)
@@ -110,6 +110,14 @@ ResourceIO.prototype.update = function()
             }
         }
     }
+
+    // instanceof is used to only spit out resources from the outputs of machines that can't keep them (e.g. transformers)
+    if(!this.isConnected() && this.ioType === IOType.OUTPUT && this.isBackedUp
+        && this.parentEntity instanceof ResourceTransformer)
+    {
+        this.isBackedUp = false;
+        new Resource(this.getX() + 10, this.getY(), this.parentEntity.game, this.resourceType);
+    }
 };
 
 ResourceIO.prototype.render = function()
@@ -121,6 +129,11 @@ ResourceIO.prototype.render = function()
     const resourceConfig = this.getResourceConfig();
     const resourceColor = resourceConfig == null ? "#222" : resourceConfig.COLOR;
     const backgroundColor = isMouseSelected ? "#ddd" : (this.isMouseHovering() ? "#fff" : (isConnected ? resourceColor : "#000"));
+
+    if(this.isBackedUp)
+    {
+        Draw.circle(this.parentEntity.world, x, y, this.radius + 4, "#808");
+    }
 
     if(this.ioType === IOType.INPUT)
     {

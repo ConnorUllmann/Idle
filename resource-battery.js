@@ -37,6 +37,33 @@ ResourceBattery.prototype.update = function()
 
     this.inputResourceIO.update();
     this.outputResourceIO.update();
+
+    if(this.inputResourceIO.isConnected() && this.inputResourceIO.connectedResourceIO.isBackedUp)
+    {
+        if(this.amount >= this.max)
+        {
+            if(!this.outputResourceIO.isBackedUp)
+            {
+                this.outputResourceIO.isBackedUp = true;
+                this.inputResourceIO.connectedResourceIO.isBackedUp = false;
+            }
+        }
+        else
+        {
+            this.addResource(1);
+            this.inputResourceIO.connectedResourceIO.isBackedUp = false;
+        }
+    }
+
+    if(!this.outputResourceIO.isBackedUp && this.outputResourceIO.isConnected())
+    {
+        if(this.amount >= 1)
+        {
+            this.addResource(-1);
+            this.outputResourceIO.isBackedUp = true;
+        }
+    }
+
 };
 
 ResourceBattery.prototype.render = function()
@@ -81,17 +108,4 @@ ResourceBattery.prototype.getResourceConfig = function() { return this.resourceT
 ResourceBattery.prototype.addResource = function(amount)
 {
     this.amount = Utils.clamp(this.amount + amount, 0, this.max);
-};
-
-ResourceBattery.prototype.tryReceiveInput = function(resourceIO)
-{
-    if(!this.canReceiveInput(resourceIO))
-        return false;
-    this.addResource(1);
-    return true;
-};
-
-ResourceBattery.prototype.canReceiveInput = function(resourceIO)
-{
-    return !this.isFull();
 };

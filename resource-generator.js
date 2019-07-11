@@ -24,11 +24,11 @@ ResourceGenerator.prototype.update = function()
     this.outputResourceIO.update();
     if(this.outputResourceIO.isConnected())
     {
-        let canGenerate = this.outputResourceIO.connectedResourceIO.canAddResource();
+        let canGenerate = !this.outputResourceIO.isBackedUp;
         if(canGenerate)
             this.generationTimer.update();
         if(this.generationTimer.triggered)
-            this.outputResourceIO.connectedResourceIO.tryAddResource();
+            this.outputResourceIO.isBackedUp = true;
     }
 
 };

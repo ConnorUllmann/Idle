@@ -6,6 +6,7 @@ function Resource(x, y, game, resourceType)
     Actor.call(this, x, y, this.game.world, this.radius * 2 , this.radius * 2);
 
     this.outputResourceIO = new ResourceIO(this, this.width/2, 0, 8, this.resourceType, IOType.OUTPUT);
+    this.outputResourceIO.isBackedUp = true;
 }
 Resource.prototype = Object.create(Actor.prototype);
 Resource.prototype.constructor = Resource;
@@ -20,11 +21,8 @@ Resource.prototype.update = function()
     Actor.prototype.update.call(this);
 
     this.outputResourceIO.update();
-    if(this.outputResourceIO.isConnected())
-    {
-        if(this.outputResourceIO.connectedResourceIO.tryAddResource())
-            this.destroy();
-    }
+    if(!this.outputResourceIO.isBackedUp)
+        this.destroy();
 };
 
 Resource.prototype.render = function()
