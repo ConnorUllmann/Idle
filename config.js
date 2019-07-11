@@ -3,20 +3,17 @@ const ResourceConfig =
     ISOPHINE:
     {
         COLOR: new Color(0, 255, 0),
-        WIDTH: 20,
-        HEIGHT: 20
+        GENERATION_DURATION: 1
     },
     METOSION:
     {
         COLOR: new Color(255, 0, 0),
-        WIDTH: 30,
-        HEIGHT: 30
+        GENERATION_DURATION: 5
     },
     ALTROSIA:
     {
         COLOR: new Color(0, 0, 255),
-        WIDTH: 40,
-        HEIGHT: 40
+        GENERATION_DURATION: 10
     }
 };
 const ResourceTypes = Object.keys(ResourceConfig);

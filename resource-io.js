@@ -20,7 +20,23 @@ function ResourceIO(parentEntity, xOffset, yOffset, radius, resourceType, ioType
 
 ResourceIO.prototype.removed = function()
 {
+    this.disconnect();
     ResourceIO.all.removeThis(this);
+};
+
+ResourceIO.prototype.canAddResource = function()
+{
+    if(this.ioType !== IOType.INPUT)
+        return false;
+    return this.parentEntity.canReceiveInput(this);
+};
+
+// Returns true if the parent entity was able to receive the added resource
+ResourceIO.prototype.tryAddResource = function()
+{
+    if(this.ioType !== IOType.INPUT)
+        return false;
+    return this.parentEntity.tryReceiveInput(this);
 };
 
 ResourceIO.prototype.isIOMatch = function(resourceIO)
@@ -66,6 +82,11 @@ ResourceIO.prototype.setResourceType = function(resourceType)
     this.resourceType = resourceType;
 };
 
+ResourceIO.prototype.getConnectedParent = function()
+{
+    return this.connectedResourceIO == null ? null : this.connectedResourceIO.parentEntity;
+};
+
 ResourceIO.prototype.getResourceConfig = function() { return this.resourceType == null ? null : ResourceConfig[this.resourceType]; };
 ResourceIO.prototype.getX = function() { return this.parentEntity.x + this.xOffset; };
 ResourceIO.prototype.getY = function() { return this.parentEntity.y + this.yOffset; };
@@ -100,8 +121,19 @@ ResourceIO.prototype.render = function()
     const resourceConfig = this.getResourceConfig();
     const resourceColor = resourceConfig == null ? "#222" : resourceConfig.COLOR;
     const backgroundColor = isMouseSelected ? "#ddd" : (this.isMouseHovering() ? "#fff" : (isConnected ? resourceColor : "#000"));
-    Draw.circle(this.parentEntity.world, x, y, this.radius, backgroundColor);
-    Draw.circleOutline(this.parentEntity.world, x, y, this.radius, resourceColor, 3);
+
+    if(this.ioType === IOType.INPUT)
+    {
+        Draw.circle(this.parentEntity.world, x, y, this.radius, backgroundColor);
+        Draw.circle(this.parentEntity.world, x, y, this.radius / 4, resourceColor);
+        Draw.circleOutline(this.parentEntity.world, x, y, this.radius, resourceColor, 3);
+    }
+    else
+    {
+        Draw.circle(this.parentEntity.world, x, y, this.radius, resourceColor);
+        Draw.circle(this.parentEntity.world, x, y, this.radius / 3, backgroundColor);
+        //Draw.circleOutline(this.parentEntity.world, x, y, this.radius, backgroundColor, 3);
+    }
     
     if(isConnected && this.ioType === IOType.INPUT)
     {
