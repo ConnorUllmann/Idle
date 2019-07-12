@@ -10,18 +10,34 @@ function Game(world)
 
     let resourceGenA = new ResourceGenerator(300, 150, this, ResourceType.ISOPHINE);
     let resourceGenB = new ResourceGenerator(300, 250, this, ResourceType.METOSION);
-    let resourceGenC = new ResourceGenerator(300, 350, this, ResourceType.ALTROSIA);
+    let resourceGenC = new ResourceGenerator(300, 350, this, ResourceType.METOSION);
+    let resourceGenD = new ResourceGenerator(300, 450, this, ResourceType.METOSION);
+    let resourceGenE = new ResourceGenerator(300, 550, this, ResourceType.ALTROSIA);
 
     let resourceBattA = new ResourceBattery(500, 150, this, ResourceType.ISOPHINE);
     let resourceBattB = new ResourceBattery(500, 250, this, ResourceType.METOSION);
     let resourceBattC = new ResourceBattery(500, 350, this, ResourceType.ALTROSIA);
 
-    let resourceTrans = new ResourceTransformer(500, 500, this, {
+
+    let resourceTransA = new ResourceTransformer(500, 500, this, {
+        METOSION: 2,
+        ALTROSIA: 1
+    }, {
+        ISOPHINE: 2
+    });
+
+    let resourceTransB = new ResourceTransformer(600, 450, this, {
         METOSION: 1,
-        ALTROSIA: 1,
         ISOPHINE: 1
     }, {
-        ISOPHINE: 1
+        ALTROSIA: 2
+    });
+
+    let resourceTransC = new ResourceTransformer(600, 550, this, {
+        ISOPHINE: 1,
+        METOSION: 1
+    }, {
+        ALTROSIA: 2
     });
 }
 Game.prototype = Object.create(Entity.prototype);

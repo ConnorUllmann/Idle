@@ -5,12 +5,11 @@ ResourceIO.getMouseHoveringConnectableResourceIOWithResourceType = function(reso
 };
 
 
-function ResourceIO(parentEntity, xOffset, yOffset, radius, resourceType, ioType)
+function ResourceIO(parentEntity, xOffset, yOffset, resourceType, ioType)
 {
     this.parentEntity = parentEntity;
     this.xOffset = xOffset;
     this.yOffset = yOffset;
-    this.radius = radius;
     this.resourceType = resourceType;
     this.ioType = ioType;
     this.connectedResourceIO = null;
@@ -18,6 +17,8 @@ function ResourceIO(parentEntity, xOffset, yOffset, radius, resourceType, ioType
 
     ResourceIO.all.push(this);
 }
+
+ResourceIO.radius = 10;
 
 ResourceIO.prototype.removed = function()
 {
@@ -28,15 +29,6 @@ ResourceIO.prototype.removed = function()
 ResourceIO.prototype.receiveTransferReadySignal = function()
 {
     this.parentEntity.receiveTransferReadySignal(this);
-};
-
-// Output => Input communication
-ResourceIO.prototype.tryTakeResource = function()
-{
-    if(!this.isBackedUp)
-        return false;
-    this.isBackedUp = false;
-    return true;
 };
 
 ResourceIO.prototype.isIOMatch = function(resourceIO)
@@ -112,12 +104,12 @@ ResourceIO.prototype.update = function()
     }
 
     // instanceof is used to only spit out resources from the outputs of machines that can't keep them (e.g. transformers)
-    if(!this.isConnected() && this.ioType === IOType.OUTPUT && this.isBackedUp
+    /*if(!this.isConnected() && this.ioType === IOType.OUTPUT && this.isBackedUp
         && this.parentEntity instanceof ResourceTransformer)
     {
         this.isBackedUp = false;
         new Resource(this.getX() + 10, this.getY(), this.parentEntity.game, this.resourceType);
-    }
+    }*/
 };
 
 ResourceIO.prototype.render = function()
@@ -132,20 +124,21 @@ ResourceIO.prototype.render = function()
 
     if(this.isBackedUp)
     {
-        Draw.circle(this.parentEntity.world, x, y, this.radius + 4, "#808");
+        Resource.draw(this.parentEntity.world, x, y, resourceColor);
     }
 
     if(this.ioType === IOType.INPUT)
     {
-        Draw.circle(this.parentEntity.world, x, y, this.radius, backgroundColor);
-        Draw.circle(this.parentEntity.world, x, y, this.radius / 4, resourceColor);
-        Draw.circleOutline(this.parentEntity.world, x, y, this.radius, resourceColor, 3);
+        Draw.circle(this.parentEntity.world, x, y, ResourceIO.radius, backgroundColor);
+        Draw.circle(this.parentEntity.world, x, y, ResourceIO.radius / 4, resourceColor);
+
+        const borderWidth = 3;
+        Draw.circleOutline(this.parentEntity.world, x, y, ResourceIO.radius - Math.floor(borderWidth/2), resourceColor, borderWidth);
     }
     else
     {
-        Draw.circle(this.parentEntity.world, x, y, this.radius, resourceColor);
-        Draw.circle(this.parentEntity.world, x, y, this.radius / 3, backgroundColor);
-        //Draw.circleOutline(this.parentEntity.world, x, y, this.radius, backgroundColor, 3);
+        Draw.circle(this.parentEntity.world, x, y, ResourceIO.radius, resourceColor);
+        Draw.circle(this.parentEntity.world, x, y, ResourceIO.radius / 3, backgroundColor);
     }
     
     if(isConnected && this.ioType === IOType.INPUT)
@@ -170,7 +163,7 @@ ResourceIO.prototype.isMouseHovering = function()
 {
     let xMouse = this.parentEntity.world.mouse.x;
     let yMouse = this.parentEntity.world.mouse.y;
-    return Utils.distanceSq(this.getX(), this.getY(), xMouse, yMouse) <= this.radius * this.radius;
+    return Utils.distanceSq(this.getX(), this.getY(), xMouse, yMouse) <= ResourceIO.radius * ResourceIO.radius;
 };
 
 ResourceIO.prototype.isMouseSelected = function() { return this === this.parentEntity.game.mouseSelectedResourceIO; };

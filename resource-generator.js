@@ -5,7 +5,7 @@ function ResourceGenerator(x, y, game, resourceType)
     this.backgroundColor = new Color(80, 80, 80);
     Actor.call(this, x, y, this.game.world, 40, 40);
 
-    this.outputResourceIO = new ResourceIO(this, this.width/2, 0, 8, this.resourceType, IOType.OUTPUT);
+    this.outputResourceIO = new ResourceIO(this, this.width/2, 0, this.resourceType, IOType.OUTPUT);
 
     this.generationTimer = new LoopTimer(this.getResourceConfig().GENERATION_DURATION);
 }

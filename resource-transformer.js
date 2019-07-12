@@ -15,11 +15,10 @@ function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes
     const inputResourceTypeList = this.linearize(inputResourceTypes);
     const outputResourceTypeList = this.linearize(outputResourceTypes);
 
-    this.resourceIORadius = 8;
     this.topBottomMargin = 10;
     let inputsOutputsMargin = 20;
-    let width = this.resourceIORadius * 2 + inputsOutputsMargin;
-    let height = this.topBottomMargin + (this.resourceIORadius * 2 + this.topBottomMargin) * Math.max(inputResourceTypeList.length, outputResourceTypeList.length);
+    let width = ResourceIO.radius * 2 + inputsOutputsMargin;
+    let height = this.topBottomMargin + (ResourceIO.radius * 2 + this.topBottomMargin) * Math.max(inputResourceTypeList.length, outputResourceTypeList.length);
     Actor.call(this, x, y, this.game.world, width, height);
 
     const xLeft = this.getLeftX();
@@ -29,21 +28,21 @@ function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes
     this.inputResourceIOs = [];
     this.outputResourceIOs = [];
 
-    const heightBetweenMargins = this.height - (this.topBottomMargin + this.resourceIORadius) * 2;
+    const heightBetweenMargins = this.height - (this.topBottomMargin + ResourceIO.radius) * 2;
     for(let i = 0; i < inputResourceTypeList.length; i++)
     {
         let resourceType = inputResourceTypeList[i];
         let x = xLeft;
-        let y = yTop + this.topBottomMargin + this.resourceIORadius + heightBetweenMargins * i / (inputResourceTypeList.length - 1);
-        let resourceIO = new ResourceIO(this, x - this.x, y - this.y, this.resourceIORadius, resourceType, IOType.INPUT);
+        let y = yTop + this.topBottomMargin + ResourceIO.radius + heightBetweenMargins * i / (inputResourceTypeList.length - 1);
+        let resourceIO = new ResourceIO(this, x - this.x, y - this.y, resourceType, IOType.INPUT);
         this.inputResourceIOs.push(resourceIO);
     }
     for(let i = 0; i < outputResourceTypeList.length; i++)
     {
         let resourceType = outputResourceTypeList[i];
         let x = xRight;
-        let y = yTop + this.topBottomMargin + this.resourceIORadius + heightBetweenMargins * i / Math.max(1, outputResourceTypeList.length - 1);
-        let resourceIO = new ResourceIO(this, x - this.x, y - this.y, this.resourceIORadius, resourceType, IOType.OUTPUT);
+        let y = yTop + this.topBottomMargin + ResourceIO.radius + heightBetweenMargins * i / Math.max(1, outputResourceTypeList.length - 1);
+        let resourceIO = new ResourceIO(this, x - this.x, y - this.y, resourceType, IOType.OUTPUT);
         this.outputResourceIOs.push(resourceIO);
     }
 }
@@ -85,7 +84,10 @@ ResourceTransformer.prototype.update = function()
     for(let resourceIO of this.outputResourceIOs)
         resourceIO.update();
 
-    if(!this.inputResourceIOs.any(o => !o.isConnected()) && !this.inputResourceIOs.map(o => o.connectedResourceIO).any(o => !o.isBackedUp))
+    let allInputsConnected = this.hasConnectedAllInputs();
+    let allInputsBackedUp = allInputsConnected && !this.inputResourceIOs.map(o => o.connectedResourceIO).any(o => !o.isBackedUp);
+    let allOutputsNotBackedUp = !this.outputResourceIOs.any(o => o.isBackedUp);
+    if(allInputsConnected && allInputsBackedUp && allOutputsNotBackedUp)
     {
         this.inputResourceIOs.map(o => o.connectedResourceIO).forEach(o => o.isBackedUp = false);
         this.outputResourceIOs.forEach(o => o.isBackedUp = true);
@@ -98,7 +100,7 @@ ResourceTransformer.prototype.render = function()
     const yTop = this.getTopY();
 
     Draw.rect(this.world, xLeft, yTop, this.width, this.height, this.hasConnectedAllInputs() ? this.colorConnectedInputs : this.colorDefault);
-    Draw.rectLines(this.world, xLeft, yTop, this.width, this.height, "#fff", 3);
+    Draw.rectLines(this.world, xLeft, yTop, this.width, this.height, this.colorDefault, 3);
 
     for(let resourceIO of this.inputResourceIOs)
         resourceIO.render();
