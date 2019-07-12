@@ -10,7 +10,7 @@ function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes
 {
     this.game = game;
     this.colorConnectedInputs = new Color(255, 255, 0);
-    this.colorDefault = new Color(128, 128, 0);
+    this.colorDefault = new Color(80, 80, 80);
 
     const inputResourceTypeList = this.linearize(inputResourceTypes);
     const outputResourceTypeList = this.linearize(outputResourceTypes);
@@ -100,7 +100,6 @@ ResourceTransformer.prototype.render = function()
     const yTop = this.getTopY();
 
     Draw.rect(this.world, xLeft, yTop, this.width, this.height, this.hasConnectedAllInputs() ? this.colorConnectedInputs : this.colorDefault);
-    Draw.rectLines(this.world, xLeft, yTop, this.width, this.height, this.colorDefault, 3);
 
     for(let resourceIO of this.inputResourceIOs)
         resourceIO.render();
