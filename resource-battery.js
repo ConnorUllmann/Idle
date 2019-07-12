@@ -63,7 +63,6 @@ ResourceBattery.prototype.update = function()
             this.outputResourceIO.isBackedUp = true;
         }
     }
-
 };
 
 ResourceBattery.prototype.render = function()
