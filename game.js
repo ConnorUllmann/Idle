@@ -18,6 +18,7 @@ function Game(world)
     let resourceBattB = new ResourceBattery(500, 250, this, ResourceType.METOSION);
     let resourceBattC = new ResourceBattery(500, 350, this, ResourceType.ALTROSIA);
 
+    let resourceSinkA = new ResourceSink(600, 400, this, ResourceType.ISOPHINE);
 
     let resourceTransA = new ResourceTransformer(500, 500, this, {
         METOSION: 2,
