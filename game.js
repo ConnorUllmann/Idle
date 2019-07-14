@@ -4,15 +4,25 @@ function Game(world)
 
     this.mouseSelectedResourceIO = null;
 
-    let resourceA = new Resource(100, 150, this, ResourceType.ISOPHINE);
-    let resourceB = new Resource(100, 200, this, ResourceType.METOSION);
-    let resourceC = new Resource(100, 250, this, ResourceType.ALTROSIA);
-    let resourceD = new Resource(150, 150, this, ResourceType.ISOPHINE);
-    let resourceE = new Resource(150, 200, this, ResourceType.METOSION);
-    let resourceF = new Resource(150, 250, this, ResourceType.ALTROSIA);
-    let resourceG = new Resource(200, 150, this, ResourceType.ISOPHINE);
-    let resourceH = new Resource(200, 200, this, ResourceType.METOSION);
-    let resourceI = new Resource(200, 250, this, ResourceType.ALTROSIA);
+    let resourceISO1 = new Resource(100, 150, this, ResourceType.ISOPHINE);
+    let resourceISO2 = new Resource(150, 150, this, ResourceType.ISOPHINE);
+    let resourceISO3 = new Resource(200, 150, this, ResourceType.ISOPHINE);
+    
+    let resourceMET1 = new Resource(100, 200, this, ResourceType.METOSION);
+    let resourceMET2 = new Resource(150, 200, this, ResourceType.METOSION);
+    let resourceMET3 = new Resource(200, 200, this, ResourceType.METOSION);
+
+    let resourceALT1 = new Resource(100, 250, this, ResourceType.ALTROSIA);
+    let resourceALT2 = new Resource(150, 250, this, ResourceType.ALTROSIA);
+    let resourceALT3 = new Resource(200, 250, this, ResourceType.ALTROSIA);
+
+    let resourceOBE1 = new Resource(100, 300, this, ResourceType.OBERNINE);
+    let resourceOBE2 = new Resource(150, 300, this, ResourceType.OBERNINE);
+    let resourceOBE3 = new Resource(200, 300, this, ResourceType.OBERNINE);
+
+    let resourceEIN1 = new Resource(100, 350, this, ResourceType.EINORITE);
+    let resourceEIN2 = new Resource(150, 350, this, ResourceType.EINORITE);
+    let resourceEIN3 = new Resource(200, 350, this, ResourceType.EINORITE);
 
     let resourceGenA = new ResourceGenerator(300, 150, this, ResourceType.ISOPHINE);
     let resourceGenB = new ResourceGenerator(300, 200, this, ResourceType.METOSION);
@@ -30,26 +40,28 @@ function Game(world)
     let resourceSinkA = new ResourceSink(700, 150, this, ResourceType.ISOPHINE);
     let resourceSinkB = new ResourceSink(700, 250, this, ResourceType.METOSION);
     let resourceSinkC = new ResourceSink(700, 350, this, ResourceType.ALTROSIA);
+    let resourceSinkD = new ResourceSink(700, 450, this, ResourceType.OBERNINE);
+    let resourceSinkE = new ResourceSink(700, 550, this, ResourceType.EINORITE);
 
-    let resourceTransA = new ResourceTransformer(500, 700, this, {
+    let resourceTransA = new ResourceTransformer(300, 700, this, {
         METOSION: 2,
         ALTROSIA: 1
     }, {
         ISOPHINE: 2
     });
 
-    let resourceTransB = new ResourceTransformer(600, 650, this, {
-        METOSION: 1,
-        ISOPHINE: 1
-    }, {
+    let resourceTransB = new ResourceTransformer(400, 650, this, {
+        METOSION: 2,
         ALTROSIA: 2
+    }, {
+        OBERNINE: 1
     });
 
-    let resourceTransC = new ResourceTransformer(600, 750, this, {
-        ISOPHINE: 1,
-        METOSION: 1
+    let resourceTransC = new ResourceTransformer(400, 800, this, {
+        OBERNINE: 1,
+        ALTROSIA: 1
     }, {
-        ALTROSIA: 2
+        EINORITE: 1
     });
 }
 Game.prototype = Object.create(Entity.prototype);
