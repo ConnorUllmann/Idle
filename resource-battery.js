@@ -13,8 +13,14 @@ function ResourceBattery(x, y, game, resourceType)
 
     this.color = new Color(80, 80, 80);
 
-    this.inputResourceIO = new ResourceIO(this, -this.width/2, 0, this.resourceType, IOType.INPUT);
-    this.outputResourceIO = new ResourceIO(this, this.width/2, 0, this.resourceType, IOType.OUTPUT);
+    this.inputResourceIOs = [
+        new ResourceIO(this, -this.width/2, -this.height/4, this.resourceType, IOType.INPUT),
+        new ResourceIO(this, -this.width/2, this.height/4, this.resourceType, IOType.INPUT)
+    ];
+    this.outputResourceIOs = [
+        new ResourceIO(this, this.width/2, -this.height/4, this.resourceType, IOType.OUTPUT),
+        new ResourceIO(this, this.width/2, this.height/4, this.resourceType, IOType.OUTPUT)
+    ]
 }
 ResourceBattery.prototype = Object.create(Actor.prototype);
 ResourceBattery.prototype.constructor = ResourceBattery;
@@ -23,8 +29,8 @@ ResourceBattery.prototype.isFull = function() { return this.amount >= this.max; 
 
 ResourceBattery.prototype.removed = function()
 {
-    this.inputResourceIO.removed();
-    this.outputResourceIO.removed();
+    this.inputResourceIOs.forEach(o => o.removed());
+    this.outputResourceIOs.forEach(o => o.removed());
 };
 
 ResourceBattery.prototype.update = function()
@@ -35,32 +41,30 @@ ResourceBattery.prototype.update = function()
     if(this.world.keyboard.pressed['space'])
         this.addResource(1);
 
-    this.inputResourceIO.update();
-    this.outputResourceIO.update();
+    this.inputResourceIOs.forEach(o => o.update());
+    this.outputResourceIOs.forEach(o => o.update());
 
-    if(this.inputResourceIO.isConnected() && this.inputResourceIO.connectedResourceIO.isBackedUp)
+    for(let inputResourceIO of this.inputResourceIOs)
     {
-        if(this.amount >= this.max)
-        {
-            if(!this.outputResourceIO.isBackedUp)
-            {
-                this.outputResourceIO.isBackedUp = true;
-                this.inputResourceIO.connectedResourceIO.isBackedUp = false;
-            }
-        }
-        else
+        if(!inputResourceIO.isConnected() || !inputResourceIO.connectedResourceIO.isBackedUp)
+            continue;
+
+        if(this.amount < this.max)
         {
             this.addResource(1);
-            this.inputResourceIO.connectedResourceIO.isBackedUp = false;
+            inputResourceIO.connectedResourceIO.isBackedUp = false;
         }
     }
 
-    if(!this.outputResourceIO.isBackedUp && this.outputResourceIO.isConnected())
+    for(let outputResourceIO of this.outputResourceIOs)
     {
+        if(outputResourceIO.isBackedUp)
+            continue;
+
         if(this.amount >= 1)
         {
             this.addResource(-1);
-            this.outputResourceIO.isBackedUp = true;
+            outputResourceIO.isBackedUp = true;
         }
     }
 };
@@ -69,18 +73,18 @@ ResourceBattery.prototype.render = function()
 {
     Draw.rect(this.world, this.getLeftX(), this.getTopY(), this.width, this.height, this.color);
 
-    this.inputResourceIO.render();
-    this.outputResourceIO.render();
+    this.inputResourceIOs.forEach(o => o.render());
+    this.outputResourceIOs.forEach(o => o.render());
 
     if(this.amount > 0 && this.resourceType != null)
     {
         let rows = this.rows;
         let columns = this.columns;
 
-        let slotColor = this.getResourceConfig().COLOR;
         let slotWidth = (this.width - this.slotMargin * (1 + columns)) / columns;
         let slotHeight = (this.height - this.slotMargin * (1 + rows)) / rows;
         slotWidth = slotHeight = Math.min(slotWidth, slotHeight);
+
         let remainingSlotsCharged = this.amount;
         for(let i = 0; i < rows; i++)
         {
@@ -88,7 +92,7 @@ ResourceBattery.prototype.render = function()
             {
                 let x = this.width / 2 - columns / 2 * slotWidth - (columns - 1) / 2 * this.slotMargin + j * (slotWidth + this.slotMargin);
                 let y = this.height / 2 - rows / 2 * slotHeight - (rows - 1) / 2 * this.slotMargin + i * (slotHeight + this.slotMargin);
-                Resource.draw(this.world, this.getLeftX() + x + slotWidth/2, this.getTopY() + y + slotHeight/2, slotColor);
+                Resource.draw(this.world, this.getLeftX() + x + slotWidth/2, this.getTopY() + y + slotHeight/2, this.resourceType);
                 remainingSlotsCharged--;
                 if(remainingSlotsCharged <= 0)
                     break;

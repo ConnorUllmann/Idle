@@ -20,30 +20,32 @@ function Game(world)
     let resourceGenD = new ResourceGenerator(300, 300, this, ResourceType.METOSION);
     let resourceGenE = new ResourceGenerator(300, 350, this, ResourceType.METOSION);
     let resourceGenF = new ResourceGenerator(300, 400, this, ResourceType.ALTROSIA);
+    let resourceGenG = new ResourceGenerator(300, 450, this, ResourceType.ALTROSIA);
 
     let resourceBattA = new ResourceBattery(500, 150, this, ResourceType.ISOPHINE);
     let resourceBattB = new ResourceBattery(500, 250, this, ResourceType.METOSION);
-    let resourceBattC = new ResourceBattery(500, 350, this, ResourceType.ALTROSIA);
+    let resourceBattC = new ResourceBattery(500, 350, this, ResourceType.METOSION);
+    let resourceBattD = new ResourceBattery(500, 450, this, ResourceType.ALTROSIA);
 
     let resourceSinkA = new ResourceSink(700, 150, this, ResourceType.ISOPHINE);
     let resourceSinkB = new ResourceSink(700, 250, this, ResourceType.METOSION);
     let resourceSinkC = new ResourceSink(700, 350, this, ResourceType.ALTROSIA);
 
-    let resourceTransA = new ResourceTransformer(500, 500, this, {
+    let resourceTransA = new ResourceTransformer(500, 700, this, {
         METOSION: 2,
         ALTROSIA: 1
     }, {
         ISOPHINE: 2
     });
 
-    let resourceTransB = new ResourceTransformer(600, 450, this, {
+    let resourceTransB = new ResourceTransformer(600, 650, this, {
         METOSION: 1,
         ISOPHINE: 1
     }, {
         ALTROSIA: 2
     });
 
-    let resourceTransC = new ResourceTransformer(600, 550, this, {
+    let resourceTransC = new ResourceTransformer(600, 750, this, {
         ISOPHINE: 1,
         METOSION: 1
     }, {

@@ -11,7 +11,6 @@ Resource.prototype = Object.create(Actor.prototype);
 Resource.prototype.constructor = Resource;
 
 Resource.radius = 16;
-Resource.sides = 6;
 
 Resource.prototype.removed = function()
 {
@@ -33,9 +32,11 @@ Resource.prototype.render = function()
     Actor.prototype.render.call(this);
 };
 
-Resource.draw = function(world, x, y, color)
+Resource.draw = function(world, x, y, resourceType)
 {
-    Draw.regularPolygon(world, x, y, Resource.radius, Resource.sides, color, world.timeSinceStart() / 200);
+    const resourceConfig = ResourceConfig[resourceType];
+    const angleRadians = world.timeSinceStart() / 1000 * resourceConfig.SPIN_RATE;
+    Draw.regularPolygon(world, x, y, Resource.radius, resourceConfig.SIDES, resourceConfig.COLOR, angleRadians);
 };
 
 Resource.prototype.getResourceConfig = function() { return this.resourceType == null ? null : ResourceConfig[this.resourceType]; };

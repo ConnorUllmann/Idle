@@ -6,10 +6,10 @@ function ResourceSink(x, y, game, resourceType)
     this.resourceType = resourceType;
 
     this.inputResourceIOs = [
-        new ResourceIO(this, -ResourceIO.radius, ResourceIO.radius, this.resourceType, IOType.INPUT),
-        new ResourceIO(this, -ResourceIO.radius, -ResourceIO.radius, this.resourceType, IOType.INPUT),
-        new ResourceIO(this, ResourceIO.radius, ResourceIO.radius, this.resourceType, IOType.INPUT),
-        new ResourceIO(this, ResourceIO.radius, -ResourceIO.radius, this.resourceType, IOType.INPUT)
+        new ResourceIO(this, -ResourceIO.radius * 1.5, 0, this.resourceType, IOType.INPUT),
+        new ResourceIO(this, ResourceIO.radius * 1.5, 0, this.resourceType, IOType.INPUT),
+        new ResourceIO(this, 0, -ResourceIO.radius * 1.5, this.resourceType, IOType.INPUT),
+        new ResourceIO(this, 0, ResourceIO.radius * 1.5, this.resourceType, IOType.INPUT)
     ];
 
     this.driftLengthNormal = 0;
@@ -21,6 +21,7 @@ ResourceSink.prototype = Object.create(Actor.prototype);
 ResourceSink.prototype.constructor = ResourceSink;
 
 ResourceSink.radius = 40;
+ResourceSink.sides = 8;
 
 ResourceSink.prototype.update = function()
 {
@@ -30,11 +31,11 @@ ResourceSink.prototype.update = function()
     this.inputResourceIOs.forEach(o => o.update());
     for(let inputResourceIO of this.inputResourceIOs)
     {
-        if(inputResourceIO.isConnected() && inputResourceIO.connectedResourceIO.isBackedUp)
-        {
-            inputResourceIO.connectedResourceIO.isBackedUp = false;
-            this.pulseTimer.reset();
-        }
+        if(!inputResourceIO.isConnected() || !inputResourceIO.connectedResourceIO.isBackedUp)
+        continue;
+
+        inputResourceIO.connectedResourceIO.isBackedUp = false;
+        this.pulseTimer.reset();
     }
 };
 
@@ -69,7 +70,7 @@ ResourceSink.prototype.render = function()
         let driftLength = this.driftLengthNormal * i / (layers - 1) * (8 - 4 * this.pulseTimer.value);
         let x = this.x + driftLength * Math.cos(driftAngleRadians);
         let y = this.y + driftLength * Math.sin(driftAngleRadians);
-        Draw.regularPolygon(this.world, x, y, radius, Resource.sides, color, angleRadians);
+        Draw.regularPolygon(this.world, x, y, radius, ResourceSink.sides, color, angleRadians);
     }
 
     if(inputResourceInFront)

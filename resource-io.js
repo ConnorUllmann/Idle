@@ -122,9 +122,9 @@ ResourceIO.prototype.render = function()
     const resourceColor = resourceConfig == null ? "#222" : resourceConfig.COLOR;
     const backgroundColor = isMouseSelected ? "#ddd" : (this.isMouseHovering() ? "#fff" : (isConnected ? resourceColor : "#000"));
 
-    if(this.isBackedUp)
+    if(this.isBackedUp && this.resourceType != null)
     {
-        Resource.draw(this.parentEntity.world, x, y, resourceColor);
+        Resource.draw(this.parentEntity.world, x, y, this.resourceType);
     }
 
     if(this.ioType === IOType.INPUT)

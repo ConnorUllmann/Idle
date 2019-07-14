@@ -22,15 +22,12 @@ ResourceGenerator.prototype.update = function()
     Actor.prototype.update.call(this);
 
     this.outputResourceIO.update();
-    if(this.outputResourceIO.isConnected())
+    if(!this.outputResourceIO.isBackedUp)
     {
-        let canGenerate = !this.outputResourceIO.isBackedUp;
-        if(canGenerate)
-            this.generationTimer.update();
-        if(this.generationTimer.triggered)
+        this.generationTimer.update();
+        if (this.generationTimer.triggered)
             this.outputResourceIO.isBackedUp = true;
     }
-
 };
 
 ResourceGenerator.prototype.render = function()
