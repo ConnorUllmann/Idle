@@ -33,7 +33,7 @@ function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes
     {
         let resourceType = inputResourceTypeList[i];
         let x = xLeft;
-        let y = yTop + this.topBottomMargin + ResourceIO.radius + heightBetweenMargins * i / (inputResourceTypeList.length - 1);
+        let y = yTop + this.topBottomMargin + ResourceIO.radius + heightBetweenMargins * (inputResourceTypeList.length === 1 ? 0.5: i) / Math.max(1, inputResourceTypeList.length - 1);
         let resourceIO = new ResourceIO(this, x - this.x, y - this.y, resourceType, IOType.INPUT);
         this.inputResourceIOs.push(resourceIO);
     }
@@ -41,7 +41,7 @@ function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes
     {
         let resourceType = outputResourceTypeList[i];
         let x = xRight;
-        let y = yTop + this.topBottomMargin + ResourceIO.radius + heightBetweenMargins * i / Math.max(1, outputResourceTypeList.length - 1);
+        let y = yTop + this.topBottomMargin + ResourceIO.radius + heightBetweenMargins * (outputResourceTypeList.length === 1 ? 0.5: i) / Math.max(1, outputResourceTypeList.length - 1);
         let resourceIO = new ResourceIO(this, x - this.x, y - this.y, resourceType, IOType.OUTPUT);
         this.outputResourceIOs.push(resourceIO);
     }

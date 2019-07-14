@@ -1,11 +1,11 @@
 function ResourceBattery(x, y, game, resourceType)
 {
     this.game = game;
-    Actor.call(this, x, y, this.game.world, 90, 75);
+    Actor.call(this, x, y, this.game.world, 120, 85);
 
     this.slotMargin = 6;
-    this.rows = 2;
-    this.columns = 2;
+    this.rows = 3;
+    this.columns = 3;
     this.max = this.rows * this.columns;
 
     this.resourceType = resourceType;
@@ -13,14 +13,29 @@ function ResourceBattery(x, y, game, resourceType)
 
     this.color = new Color(80, 80, 80);
 
-    this.inputResourceIOs = [
-        new ResourceIO(this, -this.width/2, -this.height/4, this.resourceType, IOType.INPUT),
-        new ResourceIO(this, -this.width/2, this.height/4, this.resourceType, IOType.INPUT)
-    ];
-    this.outputResourceIOs = [
-        new ResourceIO(this, this.width/2, -this.height/4, this.resourceType, IOType.OUTPUT),
-        new ResourceIO(this, this.width/2, this.height/4, this.resourceType, IOType.OUTPUT)
-    ]
+    let inputCount = 1;
+    let outputCount = 3;
+    this.outputIndex = 0; // the index of the output that will be considered first the next time a resource is ready
+
+    this.inputResourceIOs = [];
+    this.outputResourceIOs = [];
+
+    const topBottomMargin = 10;
+    const heightBetweenMargins = this.height - (topBottomMargin + ResourceIO.radius) * 2;
+    for(let i = 0; i < inputCount; i++)
+    {
+        let x = -this.width/2;
+        let y = -this.height/2 + topBottomMargin + ResourceIO.radius + heightBetweenMargins * (inputCount === 1 ? 0.5: i) / Math.max(1, inputCount - 1);
+        let resourceIO = new ResourceIO(this, x, y, this.resourceType, IOType.INPUT);
+        this.inputResourceIOs.push(resourceIO);
+    }
+    for(let i = 0; i < outputCount; i++)
+    {
+        let x = this.width/2;
+        let y = -this.height/2 + topBottomMargin + ResourceIO.radius + heightBetweenMargins * (outputCount === 1 ? 0.5: i) / Math.max(1, outputCount - 1);
+        let resourceIO = new ResourceIO(this, x, y, this.resourceType, IOType.OUTPUT);
+        this.outputResourceIOs.push(resourceIO);
+    }
 }
 ResourceBattery.prototype = Object.create(Actor.prototype);
 ResourceBattery.prototype.constructor = ResourceBattery;
@@ -56,8 +71,12 @@ ResourceBattery.prototype.update = function()
         }
     }
 
-    for(let outputResourceIO of this.outputResourceIOs)
+    let outputCount = this.outputResourceIOs.length;
+
+    for(let i = 0; i < outputCount; i++)
     {
+        let currentIndex = (this.outputIndex + i) % outputCount;
+        let outputResourceIO = this.outputResourceIOs[currentIndex];
         if(outputResourceIO.isBackedUp)
             continue;
 
@@ -65,6 +84,7 @@ ResourceBattery.prototype.update = function()
         {
             this.addResource(-1);
             outputResourceIO.isBackedUp = true;
+            this.outputIndex = currentIndex + 1;
         }
     }
 };

@@ -63,6 +63,12 @@ function Game(world)
     }, {
         EINORITE: 1
     });
+
+    let resourceTransD = new ResourceTransformer(500, 800, this, {
+        ALTROSIA: 1
+    }, {
+        EINORITE: 3
+    });
 }
 Game.prototype = Object.create(Entity.prototype);
 Game.prototype.constructor = Game;
