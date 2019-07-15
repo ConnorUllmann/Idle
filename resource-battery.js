@@ -13,7 +13,7 @@ function ResourceBattery(x, y, game, resourceType)
 
     this.color = new Color(80, 80, 80);
 
-    let inputCount = 1;
+    let inputCount = 3;
     let outputCount = 3;
     this.outputIndex = 0; // the index of the output that will be considered first the next time a resource is ready
 

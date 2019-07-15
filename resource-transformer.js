@@ -12,6 +12,9 @@ function ResourceTransformer(x, y, game, inputResourceTypes, outputResourceTypes
     this.colorConnectedInputs = new Color(255, 255, 0);
     this.colorDefault = new Color(80, 80, 80);
 
+    this.transformationRefractoryTimer = new Timer(3);
+    this.transformationRefractoryTimer.value = 1;
+
     const inputResourceTypeList = this.linearize(inputResourceTypes);
     const outputResourceTypeList = this.linearize(outputResourceTypes);
 
@@ -84,13 +87,18 @@ ResourceTransformer.prototype.update = function()
     for(let resourceIO of this.outputResourceIOs)
         resourceIO.update();
 
-    let allInputsConnected = this.hasConnectedAllInputs();
-    let allInputsBackedUp = allInputsConnected && !this.inputResourceIOs.map(o => o.connectedResourceIO).any(o => !o.isBackedUp);
-    let allOutputsNotBackedUp = !this.outputResourceIOs.any(o => o.isBackedUp);
-    if(allInputsConnected && allInputsBackedUp && allOutputsNotBackedUp)
+    this.transformationRefractoryTimer.update();
+    if(this.transformationRefractoryTimer.isFinished())
     {
-        this.inputResourceIOs.map(o => o.connectedResourceIO).forEach(o => o.isBackedUp = false);
-        this.outputResourceIOs.forEach(o => o.isBackedUp = true);
+        let allInputsConnected = this.hasConnectedAllInputs();
+        let allInputsBackedUp = allInputsConnected && !this.inputResourceIOs.map(o => o.connectedResourceIO).any(o => !o.isBackedUp);
+        let allOutputsNotBackedUp = !this.outputResourceIOs.any(o => o.isBackedUp);
+        if(allInputsConnected && allInputsBackedUp && allOutputsNotBackedUp)
+        {
+            this.inputResourceIOs.map(o => o.connectedResourceIO).forEach(o => o.isBackedUp = false);
+            this.outputResourceIOs.forEach(o => o.isBackedUp = true);
+            this.transformationRefractoryTimer.reset();
+        }
     }
 };
 
@@ -99,7 +107,10 @@ ResourceTransformer.prototype.render = function()
     const xLeft = this.getLeftX();
     const yTop = this.getTopY();
 
-    Draw.rect(this.world, xLeft, yTop, this.width, this.height, this.hasConnectedAllInputs() ? this.colorConnectedInputs : this.colorDefault);
+    Draw.rect(this.world, xLeft, yTop, this.width, this.height, (this.hasConnectedAllInputs() && this.transformationRefractoryTimer.isFinished()) ? this.colorConnectedInputs : this.colorDefault);
+
+    const borderWidth = 6 * Math.min(1, (1 - this.transformationRefractoryTimer.value) * 10);
+    Draw.rect(this.world, xLeft + borderWidth, yTop + borderWidth, (this.width - 2 * borderWidth) * this.transformationRefractoryTimer.value, this.height - 2 * borderWidth, this.colorConnectedInputs);
 
     for(let resourceIO of this.inputResourceIOs)
         resourceIO.render();
